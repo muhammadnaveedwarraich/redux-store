@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../../Store/CartSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fetchProducts } from "../../Store/productSlics/index";
+import { STATUSES } from "../../Store/productSlics/index";
 
 const Home = () => {
-  const [apiData, setApiData] = useState([]);
+  // const [apiData, setApiData] = useState([]);
   const dispatch = useDispatch();
-  const fetchData = async () => {
-    const res = await fetch("https://fakestoreapi.com/products");
-    const data = await res.json();
-    setApiData(data);
-  };
+  const { data, status } = useSelector((state) => state.ProductList);
   const tostift = () => {
     toast.success("Product Added Success  !", {
       position: toast.POSITION.TOP_RIGHT,
@@ -19,12 +17,19 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
+    dispatch(fetchProducts());
   }, []);
+  if (status === STATUSES.ERROE) {
+    return <div>error</div>;
+  }
+  if (status === STATUSES.PADDING) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="grid  grid-cols-4	 gap-3 mt-6   ">
-      {apiData.map((item) => (
+      {data.map((item) => (
         <div key={item.id} className="bg-white p-8 mb-3 space-y-3">
           <div className="flex items-center justify-center p-3">
             <img className="w-32 h-32" src={item.image} />
